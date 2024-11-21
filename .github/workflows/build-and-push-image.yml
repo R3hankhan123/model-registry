@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - 'main'
+      - 'test'
     tags:
       - 'v*'
     paths-ignore:
@@ -14,7 +15,7 @@ on:
       - '.github/dependabot.yml'
       - 'docs/**'
 env:
-  IMG_ORG: kubeflow
+  IMG_ORG: r3hankhan
   IMG_REPO: model-registry
   DOCKER_USER: ${{ secrets.DOCKERHUB_USERNAME }}
   DOCKER_PWD: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -34,7 +35,7 @@ jobs:
       - uses: actions/checkout@v4
       # set image version
       - name: Set main-branch environment
-        if: env.BUILD_CONTEXT == 'main'
+        if: env.BUILD_CONTEXT == 'test'
         run: |
           commit_sha=${{ github.event.after }}
           tag=main-${commit_sha:0:7}
@@ -47,7 +48,6 @@ jobs:
         shell: bash
         run: ./scripts/build_deploy.sh
       - name: Tag Latest
-        if: env.BUILD_CONTEXT == 'main'
         shell: bash
         env:
           IMG: ${{ env.IMG_ORG }}/${{ env.IMG_REPO }}
@@ -56,13 +56,3 @@ jobs:
           docker tag ${{ env.IMG }}:$VERSION ${{ env.IMG }}:latest
           # BUILD_IMAGE=false skip the build, just push the tag made above
           VERSION=latest ./scripts/build_deploy.sh
-      - name: Tag Main
-        if: env.BUILD_CONTEXT == 'main'
-        shell: bash
-        env:
-          IMG: ${{ env.IMG_ORG }}/${{ env.IMG_REPO }}
-          BUILD_IMAGE: false # image is already built in "Build and Push Image" step
-        run: |
-          docker tag ${{ env.IMG }}:$VERSION ${{ env.IMG }}:main
-          # BUILD_IMAGE=false skip the build, just push the tag made above
-          VERSION=main ./scripts/build_deploy.sh
