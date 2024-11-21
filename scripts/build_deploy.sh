@@ -3,8 +3,8 @@
 set -e
 
 # see Makefile for the IMG_ variables semantic
-IMG_REGISTRY=""
-IMG_ORG="${IMG_ORG:-kubeflow}"
+IMG_REGISTRY="quay.io"
+IMG_ORG="${IMG_ORG:-r3hankhan}"
 IMG_REPO="${IMG_REPO:-model-registry}"
 DOCKER_USER="${DOCKER_USER}"
 DOCKER_PWD="${DOCKER_PWD}"
@@ -53,7 +53,7 @@ if [[ "${BUILD_IMAGE,,}" == "true" ]]; then
         IMG_ORG="${IMG_ORG}" \
         IMG_REPO="${IMG_REPO}" \
         IMG_VERSION="${VERSION}" \
-        image/build
+        image/buildx
 else
     echo "Skip container image build."
 fi
